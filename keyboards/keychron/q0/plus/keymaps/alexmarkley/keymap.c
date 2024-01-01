@@ -31,11 +31,21 @@ enum custom_keycodes {
     DR_CBPJ, DR_CBPK, DR_CBPL, DR_CBPM,
     DR_CBPN, DR_CBPO, DR_CBPP, DR_CBPQ,
 
+    // DaVinci Resolve Script Triggers
+    DR_SCRA, DR_SCRB, DR_SCRC,
+    DR_SCRD, DR_SCRE, DR_SCRF,
+    DR_SCRG, DR_SCRH, DR_SCRI,
+    DR_SCRJ,
+
 };
 
 // First and last DaVinci Resolve Copy/Paste Buffer
-#define DR_CB_MIN DR_CBPA
-#define DR_CB_MAX DR_CBPQ
+#define DR_CPB_MIN DR_CBPA
+#define DR_CPB_MAX DR_CBPQ
+
+// First and last Davinci Resolve Script Trigger
+#define DR_SCR_MIN DR_SCRA
+#define DR_SCR_MAX DR_SCRJ
 
 enum layers {
     BASE,
@@ -73,10 +83,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [L3] = LAYOUT_numpad_6x5(
         XXXXXXX, _______, _______, _______, _______,
         _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______,
-        _______, _______, _______, _______,
-        _______, _______, _______, _______, _______,
-        _______, _______,          _______),
+        _______, DR_SCRA, DR_SCRB, DR_SCRC, _______,
+        _______, DR_SCRD, DR_SCRE, DR_SCRF,
+        _______, DR_SCRG, DR_SCRH, DR_SCRI, _______,
+        _______, DR_SCRJ,          _______),
 
     [L4] = LAYOUT_numpad_6x5(
         QK_BOOT, _______, _______, _______, _______,
@@ -134,16 +144,29 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             break;
     }
 
-    if(keycode >= DR_CB_MIN && keycode <= DR_CB_MAX) {
+    if(keycode >= DR_CPB_MIN && keycode <= DR_CPB_MAX) {
         if(record->event.pressed) {
             SEND_STRING(SS_DOWN(X_LCTL) SS_DOWN(X_LALT));
 
             char buffer_label[] = "a";
-            uint16_t buffer_index = keycode - DR_CB_MIN;
+            uint16_t buffer_index = keycode - DR_CPB_MIN;
             buffer_label[0] = 0x61 + (char)buffer_index;
             send_string(buffer_label);
 
             SEND_STRING(SS_UP(X_LALT) SS_UP(X_LCTL));
+        }
+    }
+
+    if(keycode >= DR_SCR_MIN && keycode <= DR_SCR_MAX) {
+        if(record->event.pressed) {
+            SEND_STRING(SS_DOWN(X_LCTL) SS_DOWN(X_LSFT));
+
+            char script_label[] = "a";
+            uint16_t script_index = keycode - DR_SCR_MIN;
+            script_label[0] = 0x61 + (char)script_index;
+            send_string(script_label);
+
+            SEND_STRING(SS_UP(X_LSFT) SS_UP(X_LCTL));
         }
     }
 
